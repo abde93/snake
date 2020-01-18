@@ -9,17 +9,26 @@ window.onload= function(){
     var applee;
     var widthInBlocks= canvasWidth/blockSize;
     var heightInBlocks= canvasHeight/blockSize;
+    var score;
+    var timeout;
      init();
 
     function init(){
+    var canvas=
+    
     canvas=document.createElement('canvas');
     canvas.width=canvasWidth;
     canvas.height=canvasHeight;
-    canvas.style.border="1px solid";
+    canvas.style.border="30px solid #9F551E ";
+    canvas.style.margin="50px auto";
+    canvas.style.display="block";
+    canvas.style.backgroundImage=" url('snakefont.jpg')"
+
     this.document.body.appendChild(canvas);
     ctx= canvas.getContext('2d');
     Snakee= new Snake([[6,4],[5,4],[4,4]], "right");
     applee= new Apple([10,10]);
+    score=0;
     refreshCanvas();
     }
 
@@ -28,12 +37,13 @@ window.onload= function(){
 
         if(Snakee.checkCollision())
         {
-
+            gameOver();
         }
         else
         {
             if (Snakee.isEatingApple(applee))
     {   
+        score++;
         Snakee.eatApple=true;
         do   
       {
@@ -42,11 +52,55 @@ window.onload= function(){
       while(applee.isOnSnake(Snakee))
     }  
         ctx.clearRect(0,0,canvasWidth,canvasHeight);
-       
+        drawScore()
         Snakee.draw();
         applee.draw();
-        setTimeout(refreshCanvas,delay)
+       
+        timeout= setTimeout(refreshCanvas,delay)
     }
+    }
+
+
+    function gameOver(){
+        ctx.save();
+        ctx.font="bold 70px san-serif";
+        ctx.fillStyle="black";
+        ctx.textAlign="center"
+        ctx.textBaseline="middle";
+        ctx.strokeStyle="#FEFFFF";
+        ctx.lineWidth=5;
+        var centerX= canvasWidth/2;
+        var centerY= canvasHeight/2;
+        ctx.strokeText("Game Over", centerX, centerY-180);
+        ctx.fillText("Game Over", centerX, centerY-180);
+        ctx.font="bold 30px sans-serif";
+        ctx.strokeText("Appuyer sur espace pour rejouer",centerX, centerY-120); 
+        ctx.fillText("Appuyer sur espace pour rejouer",centerX, centerY-120);
+        ctx.restore();
+    }
+
+
+    function restart()
+    {
+        Snakee= new Snake([[6,4],[5,4],[4,4]], "right");
+        applee= new Apple([10,10]);
+        score=0;
+        clearTimeout(timeout);
+        refreshCanvas();
+    }
+
+    function drawScore()
+    {
+        ctx.save();
+        ctx.font="bold 200px san-serif";
+        ctx.fillStyle="#FEFFFF";
+        ctx.textAlign="center"
+        ctx.textBaseline="middle";
+        var centerX= canvasWidth/2;
+        var centerY= canvasHeight/2;
+        ctx.fillText(score.toString(),centerX, centerY);
+       
+        ctx.restore();  
     }
     function drawBlock(ctx,position){
         var x = position[0] * blockSize;
@@ -61,7 +115,7 @@ window.onload= function(){
         this.draw=function()
         {
             ctx.save();
-            ctx.fillStyle='red';
+            ctx.fillStyle='#ED0000';
             for(var i=0; i<this.body.length;i++){
                 drawBlock(ctx,this.body[i]);
             };
@@ -161,7 +215,7 @@ window.onload= function(){
             this.draw=function()
             {
                 ctx.save();
-                ctx.fillStyle="green";
+                ctx.fillStyle="#34C924";
                 ctx.beginPath();
                 var radius=blockSize/2;
                 var x=this.position[0]*blockSize + radius;
@@ -207,6 +261,9 @@ window.onload= function(){
             case 40:
                 newDirection="down";
                 break;
+            case 32:
+                restart();
+                return
                 default: 
                return;       
         }
